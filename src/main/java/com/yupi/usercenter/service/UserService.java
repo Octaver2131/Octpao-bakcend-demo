@@ -60,6 +60,6 @@ public interface UserService extends IService<User> {
      * @param tagNameList 标签列表
      * @return
      */
-    List<User> searchUserByTag(List<String> tagNameList);
+    List<User> searchUserByTags(List<String> tagNameList);
 
 }
