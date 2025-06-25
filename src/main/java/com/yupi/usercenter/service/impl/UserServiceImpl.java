@@ -226,9 +226,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             if (StringUtils.isBlank(tagsStr)){
                 return false;
             }
-            Set<String> tempTagNameSet =  gson.fromJson(tagsStr,new TypeToken<Set<String>>(){}.getType());
-            for (String tagName : tagNameList){
-                if (!tempTagNameSet.contains(tagName)){
+            Set<String> tempTagNameSet = gson.fromJson(tagsStr,new TypeToken<Set<String>>(){}.getType());
+            for (String tagName : tagNameList) {
+                if (!tempTagNameSet.contains(tagName)) {
                     return false;
                 }
             }
