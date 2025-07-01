@@ -32,11 +32,11 @@ public class Knife4jConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("鱼皮用户中心")
-                .description("鱼皮用户中心接口文档")
+                .title("欧可可伙伴匹配系统")
+                .description("欧可可伙伴匹配系统 - 接口文档")
                 .termsOfServiceUrl("https://github.com/liyupi")
-                .contact(new Contact("shayu","https://shayuyu.cn/","shayu-yusha@qq.com"))
-                .version("1.0")
+                .contact(new Contact("Octaver","https://github.com/Octaver2131","Octaver2131@outlook.com"))
+                .version("v1.0.0")
                 .build();
     }
 }
