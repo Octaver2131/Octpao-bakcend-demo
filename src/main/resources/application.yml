@@ -15,7 +15,9 @@ spring:
     timeout: 86400
   mvc:
     pathmatch:
-      matching-strategy: ant_path_matcher
+      matching-strategy: ANT_PATH_MATCHER
+  profiles:
+    active: dev
 server:
   port: 8080
   servlet:
