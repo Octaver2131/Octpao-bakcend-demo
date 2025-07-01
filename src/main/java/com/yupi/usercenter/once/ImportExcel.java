@@ -8,8 +8,8 @@ public class ImportExcel {
 
     public static void main(String[] args) {
         String fileName = "C:\\Users\\Octaver\\Desktop\\testExcel.xlsx";
-//        synchronousRead(fileName);
-        readByListener(fileName);
+        synchronousRead(fileName);
+//        readByListener(fileName);
 
     }
     /**
