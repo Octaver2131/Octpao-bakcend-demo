@@ -31,7 +31,7 @@ import static com.yupi.usercenter.contant.UserConstant.USER_LOGIN_STATE;
  */
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = {"http://localhost:5173"}, allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class UserController {
 
     @Resource
@@ -40,8 +40,8 @@ public class UserController {
     /**
      * 用户注册
      *
-     * @param userRegisterRequest
-     * @return
+     * @param userRegisterRequest 用户注册请求
+     * @return  用户id
      */
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
@@ -63,9 +63,9 @@ public class UserController {
     /**
      * 用户登录
      *
-     * @param userLoginRequest
-     * @param request
-     * @return
+     * @param userLoginRequest  用户登录请求
+     * @param request           请求
+     * @return  用户脱敏信息
      */
     @PostMapping("/login")
     public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
@@ -84,7 +84,7 @@ public class UserController {
     /**
      * 用户注销
      *
-     * @param request
+     * @param request 请求
      * @return
      */
     @PostMapping("/logout")
@@ -99,8 +99,8 @@ public class UserController {
     /**
      * 获取当前用户
      *
-     * @param request
-     * @return
+     * @param request 请求
+     * @return 当前用户
      */
     @GetMapping("/current")
     public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
@@ -116,11 +116,9 @@ public class UserController {
         return ResultUtils.success(safetyUser);
     }
 
-    // https://yupi.icu/
-
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH, "缺少管理员权限");
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -141,9 +139,20 @@ public class UserController {
         return ResultUtils.success(users);
     }
 
+    @PostMapping("/update")
+    public BaseResponse<Integer> updateUser(@RequestBody User user, HttpServletRequest request) {
+        // 校验参数是否为空
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        int result = userService.updateUser(user, loginUser);
+        return ResultUtils.success(result);
+    }
+
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         if (id <= 0) {
@@ -151,20 +160,5 @@ public class UserController {
         }
         boolean b = userService.removeById(id);
         return ResultUtils.success(b);
-    }
-
-    // [鱼皮的学习圈](https://yupi.icu) 从 0 到 1 求职指导，斩获 offer！1 对 1 简历优化服务、2000+ 求职面试经验分享、200+ 真实简历和建议参考、25w 字前后端精选面试题
-
-    /**
-     * 是否为管理员
-     *
-     * @param request
-     * @return
-     */
-    private boolean isAdmin(HttpServletRequest request) {
-        // 仅管理员可查询
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        User user = (User) userObj;
-        return user != null && user.getUserRole() == ADMIN_ROLE;
     }
 }
