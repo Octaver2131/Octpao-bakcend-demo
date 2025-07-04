@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yupi.usercenter.common.ErrorCode;
+import com.yupi.usercenter.contant.UserConstant;
 import com.yupi.usercenter.exception.BusinessException;
 import com.yupi.usercenter.model.domain.User;
 import com.yupi.usercenter.service.UserService;
@@ -25,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.yupi.usercenter.contant.UserConstant.ADMIN_ROLE;
 import static com.yupi.usercenter.contant.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -117,7 +119,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      *
      * @param userAccount  用户账户
      * @param userPassword 用户密码
-     * @param request
+     * @param request      请求
      * @return 脱敏后的用户信息
      */
     @Override
@@ -160,8 +162,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 用户脱敏
      *
-     * @param originUser
-     * @return
+     * @param originUser 原始用户信息
+     * @return 脱敏后的用户信息
      */
     @Override
     public User getSafetyUser(User originUser) {
@@ -187,7 +189,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 用户注销
      *
-     * @param request
+     * @param request 请求
      */
     @Override
     public int userLogout(HttpServletRequest request) {
@@ -200,7 +202,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * 根据标签搜索用户
      *
      * @param tagNameList 标签列表
-     * @return
+     * @return 用户列表
      */
     @Override
     public List<User> searchUserByTags(List<String> tagNameList) {
@@ -229,11 +231,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }).map(this::getSafetyUser).collect(Collectors.toList());
     }
 
+    @Override
+    public int updateUser(User user, User loginUser) {
+        long userId = user.getId();
+        if (userId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (!isAdmin(loginUser) && userId != loginUser.getId()) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        User oldUser = userMapper.selectById(user);
+        if (oldUser == null) {
+            throw new BusinessException(ErrorCode.NULL_ERROR);
+        }
+        return userMapper.updateById(user);
+    }
+
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (userObj == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        return (User) userObj;
+    }
+
     /**
      * 根据标签搜索用户
      *
      * @param tagNameList 标签列表
-     * @return
+     * @return 用户列表
      */
     @Deprecated
     private List<User> searchUserByTagsBySQL(List<String> tagNameList) {
@@ -249,5 +279,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         List<User> userList = userMapper.selectList(queryWrapper);
         return userList.stream().map(this::getSafetyUser).collect(Collectors.toList());
     }
+
+    /**
+     * 是否为管理员
+     *
+     * @param request 请求
+     * @return 是否为管理员
+     */
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        // 仅管理员可查询
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return user != null && user.getUserRole() == UserConstant.ADMIN_ROLE;
+    }
+
+    /**
+     * 是否为管理员
+     *
+     * @param loginUser 登录用户
+     * @return 是否为管理员
+     */
+    @Override
+    public boolean isAdmin(User loginUser) {
+        return loginUser != null && loginUser.getUserRole() == UserConstant.ADMIN_ROLE;
+    }
 }
+
 
