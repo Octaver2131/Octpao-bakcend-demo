@@ -70,10 +70,10 @@ public class InsertUserTest {
         stopWatch.start();
         final int INSERT_NUM = 100000;
         // 分十组
-        int batchSize = 2500;
+        int batchSize = 10000;
         int j = 0;
         List<CompletableFuture<Void>> futureList = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 10; i++) {
             List<User> userList = new ArrayList<>();
             while (true) {
                 j++;
