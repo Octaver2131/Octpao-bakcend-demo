@@ -152,7 +152,7 @@ public class UserController {
     @GetMapping("recommend")
     public BaseResponse<Page<User>> recommendUsers(long pageSize, long pageNum, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
-        String redisKey = String.format("partner:user:recommend:%s", loginUser.getId());
+        String redisKey = String.format("yupao:user:recommend:%s", loginUser.getId());
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
         //如果有缓存，直接读缓存
         Page<User> userPage= (Page<User>)valueOperations.get(redisKey);
