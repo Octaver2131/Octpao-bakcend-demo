@@ -1,18 +1,24 @@
 package com.yupi.usercenter.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yupi.usercenter.model.domain.User;
 import javafx.scene.control.RadioMenuItem;
 import org.junit.jupiter.api.Test;
 import org.redisson.Redisson;
 import org.redisson.api.RList;
+import org.redisson.api.RLock;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 public class RedissonTest {
@@ -45,5 +51,25 @@ public class RedissonTest {
         // set
 
         //stack
+    }
+
+    @Test
+    void testWatchDog() {
+        RLock lock = redissonClient.getLock("yupao:precachejob:docache:lock");
+        try {
+            // 只有一个线程能获取到锁
+            if (lock.tryLock(0, -1, TimeUnit.MILLISECONDS)) {
+                Thread.sleep(300000);
+                System.out.println("getLock: " + Thread.currentThread().getId());
+            }
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            // 确保释放锁
+            if (lock.isHeldByCurrentThread()) {
+                System.out.println("unLock: " + Thread.currentThread().getId());
+                lock.unlock();
+            }
+        }
     }
 }
