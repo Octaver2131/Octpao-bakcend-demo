@@ -3,6 +3,7 @@ package com.yupi.usercenter.model.domain;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,7 +12,8 @@ import java.util.Date;
  */
 @TableName(value ="team")
 @Data
-public class Team {
+public class Team implements Serializable {
+
     /**
      * id
      */
