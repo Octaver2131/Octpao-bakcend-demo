@@ -247,10 +247,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
-        Team team = this.getById(teamId);
-        if (team == null) {
-            throw new BusinessException(ErrorCode.NULL_ERROR, "队伍不存在");
-        }
+        Team team = this.getTeamById(teamId);
 
         Date expireTime = team.getExpireTime();
         if (expireTime != null && expireTime.before(new Date())) {
@@ -307,13 +304,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Long teamId = teamQuitRequest.getTeamId();
-        if (teamId == null || teamId <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Team team = this.getById(teamId);
-        if (team == null) {
-            throw new BusinessException(ErrorCode.NULL_ERROR, "队伍不存在");
-        }
+        Team team = this.getTeamById(teamId);
         Long userId = loginUser.getId();
         UserTeam queryUserTeam = new UserTeam();
         queryUserTeam.setTeamId(teamId);
@@ -356,6 +347,28 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
         // 移除关联
         return userTeamService.remove(queryWrapper);
+    }
+
+    /**
+     * 获取队伍详情
+     * @param teamId
+     * @return
+     */
+    private Team getTeamById(Long teamId) {
+        if (teamId == null || teamId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Team team = this.getById(teamId);
+        if (team == null) {
+            throw new BusinessException(ErrorCode.NULL_ERROR, "队伍不存在");
+        }
+        return team;
+    }
+
+    @Override
+    public boolean deleteTeam(Long id) {
+        // 校验队伍是否存在
+        return false;
     }
 
     /**
