@@ -2,6 +2,10 @@
 # @author <a href="https://github.com/liyupi">程序员鱼皮</a>
 # @from <a href="https://yupi.icu">编程导航知识星球</a>
 spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    locale: zh_CN
   application:
     name: user-center-backend
   # DataSource Config
@@ -34,7 +38,7 @@ server:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印sql语句
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印sql语句
   global-config:
     db-config:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)

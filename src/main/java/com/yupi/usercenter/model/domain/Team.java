@@ -1,5 +1,6 @@
 package com.yupi.usercenter.model.domain;
 
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
@@ -38,6 +39,7 @@ public class Team implements Serializable {
     /**
      * 过期时间
      */
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     private Date expireTime;
 
     /**
