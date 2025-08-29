@@ -66,4 +66,9 @@ public class TeamUserVO {
      * 是否已加入队伍
      */
     private boolean hasJoin = false;
+
+    /**
+     * 加入队伍的用户数量
+     */
+    private Integer hasJoinNum;
 }
